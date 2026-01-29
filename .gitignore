@@ -1,5 +1,13 @@
+#python stuff
 venv/
-.env
 __pycache__/
-*.sqlite3
-staticfiles/
+
+#ide stuff
+.vscode
+.idea
+.DS_Store
+
+#Django stuff
+db.sqlite3
+media/
+.env
