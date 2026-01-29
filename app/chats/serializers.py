@@ -21,16 +21,15 @@ class ChatCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chat
-        fields = ("id", "title", "created_at")
-        read_only_fields = ("id", "created_at")
+        fields = ('id', 'title', 'created_at')
+        read_only_fields = ('id', 'created_at')
 
     def validate_title(self, value: str) -> str:
-        """Проверяет длину заголовка и удаляет пробелы по краям."""
         value = value.strip()
         if not CHAT_MIN_LENGTH <= len(value) <= CHAT_MAX_LENGTH:
             raise serializers.ValidationError(
-                f"Длина заголовка должна быть от "
-                f"{CHAT_MIN_LENGTH} до {CHAT_MAX_LENGTH} символов."
+                f'Длина заголовка должна быть от '
+                f'{CHAT_MIN_LENGTH} до {CHAT_MAX_LENGTH} символов.'
             )
         return value
 
@@ -46,16 +45,15 @@ class MessageCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ("id", "chat", "text", "created_at")
-        read_only_fields = ("id", "created_at", "chat")
+        fields = ('id', 'chat', 'text', 'created_at')
+        read_only_fields = ('id', 'created_at', 'chat')
 
     def validate_text(self, value: str) -> str:
-        """Проверяет длину текста сообщения и удаляет пробелы по краям."""
         value = value.strip()
         if not MESSAGE_MIN_LENGTH <= len(value) <= MESSAGE_MAX_LENGTH:
             raise serializers.ValidationError(
-                f"Длина текста должна быть от "
-                f"{MESSAGE_MIN_LENGTH} до {MESSAGE_MAX_LENGTH} символов."
+                f'Длина текста должна быть от '
+                f'{MESSAGE_MIN_LENGTH} до {MESSAGE_MAX_LENGTH} символов.'
             )
         return value
 
@@ -65,14 +63,18 @@ class MessageListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ("id", "text", "created_at")
+        fields = ('id', 'text', 'created_at')
 
 
 class ChatDetailSerializer(serializers.ModelSerializer):
     """Сериализатор для получения чата с последними сообщениями."""
-
-    messages = MessageListSerializer(many=True)
+    messages = serializers.SerializerMethodField()
 
     class Meta:
         model = Chat
-        fields = ("id", "title", "created_at", "messages")
+        fields = ('id', 'title', 'created_at', 'messages')
+
+    def get_messages(self, obj):
+        limit = self.context.get('limit', 20)
+        messages = obj.messages.order_by('-created_at')[:limit]
+        return MessageListSerializer(reversed(messages), many=True).data

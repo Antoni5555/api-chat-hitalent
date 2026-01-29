@@ -11,10 +11,10 @@ class Chat(models.Model):
     created_at = models.DateTimeField(auto_now_add=True,)
 
     class Meta:
-        ordering = ["-created_at"]
+        ordering = ['-created_at']
 
     def __str__(self) -> str:
-        return f"Chat(id={self.id}, title={self.title})"
+        return f'Chat(id={self.id}, title={self.title})'
 
 
 class Message(models.Model):
@@ -23,13 +23,13 @@ class Message(models.Model):
     chat = models.ForeignKey(
         Chat,
         on_delete=models.CASCADE,
-        related_name="messages",
+        related_name='messages',
     )
     text = models.TextField(blank=False,)
     created_at = models.DateTimeField(auto_now_add=True,)
 
     class Meta:
-        ordering = ["created_at"]
+        ordering = ['created_at']
 
     def __str__(self) -> str:
-        return f"Message(id={self.id}, chat_id={self.chat_id})"
+        return f'Message(id={self.id}, chat_id={self.chat_id})'
